@@ -113,7 +113,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.staffButton.setGeometry(QtCore.QRect(330, 10, 61, 41))
         self.staffButton.setDefault(True)
         self.staffButton.setFlat(False)
-        self.staffButton.setObjectName("stuffButton")
+        self.staffButton.setObjectName("staffButton")
         self.manButton = QtWidgets.QPushButton(self.centralwidget)
         self.manButton.setEnabled(True)
         self.manButton.setGeometry(QtCore.QRect(330, 60, 61, 41))
@@ -162,7 +162,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.infoButton.setText(_translate("MainWindow", "今日信息"))
         self.pmsignButton.setText(_translate("MainWindow", "下班打卡"))
         self.manageButton.setText(_translate("MainWindow", "后台管理"))
-        self.stuffButton.setText(_translate("MainWindow", "员工录入"))
+        self.staffButton.setText(_translate("MainWindow", "员工录入"))
         self.manButton.setText(_translate("MainWindow", "管员录入"))
         self.delButtin.setText(_translate("MainWindow", "成员删除"))
         self.returnButton.setText(_translate("MainWindow", "主菜单"))
@@ -174,7 +174,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.delButtin.setVisible(True);
         self.manButton.setVisible(True);
         self.returnButton.setVisible(True);
-        self.stuffButton.setVisible(True);
+        self.staffButton.setVisible(True);
     def setUiHome(self):
         self.infoButton.setVisible(True);
         self.amsignButton.setVisible(True);
@@ -183,7 +183,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.delButtin.setVisible(False);
         self.manButton.setVisible(False);
         self.returnButton.setVisible(False);
-        self.stuffButton.setVisible(False);
+        self.staffButton.setVisible(False);
     def today_information_slot(self):pass
     def new_staff_slot(self):
         if (self.th.face_encodings.__len__() != 1):  # not one face in Camera
@@ -196,23 +196,23 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
     def staffFace(self):        #set Ui when face is detected and the face belong one of System's members
         self.amsignButton.setEnabled(True)
         self.pmsignButton.setEnabled(True)
-        self.stuffButton.setEnabled(False)
+        self.staffButton.setEnabled(False)
         self.manButton.setEnabled(False)
         self.manageButton.setEnabled(False)
     def unknownFace(self):       #set Ui when face is not the System's member
-        self.stuffButton.setEnabled(True)
+        self.staffButton.setEnabled(True)
         self.manButton.setEnabled(True)
     def managerFace(self):    #set Ui by whether face is detected and the face belong one of System's members
         self.manageButton.setEnabled(True)
         self.amsignButton.setEnabled(True)
         self.pmsignButton.setEnabled(True)
-        self.stuffButton.setEnabled(False)
+        self.staffButton.setEnabled(False)
         self.manButton.setEnabled(False)
     def noneFace(self):               #no man in camera,all buttons are supposed to disable
         self.manageButton.setEnabled(False)
         self.amsignButton.setEnabled(False)
         self.pmsignButton.setEnabled(False)
-        self.stuffButton.setEnabled(False)
+        self.staffButton.setEnabled(False)
         self.manButton.setEnabled(False)
 
     def newStaff(self,name):
