@@ -18,4 +18,3 @@ if __name__=='__main__':
         pickle.dump(datalist, f, fix_imports=False)  # serialize and save object
         # del info
         # info = pickle.load(f)   # read file and build object
-    video_capture = cv2.VideoCapture(0)
