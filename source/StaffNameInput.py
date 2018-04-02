@@ -8,10 +8,7 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-from FaceRecSystem import Ui_MainWindow
-
-
-class Ui_StaffInput(QtGui.QMainWindow):
+class Ui_StaffInputDialog(object):
     def setupUi(self, StaffInputDialog):
         StaffInputDialog.setObjectName("StaffInputDialog")
         StaffInputDialog.resize(235, 82)
@@ -24,7 +21,7 @@ class Ui_StaffInput(QtGui.QMainWindow):
         self.textEdit.setGeometry(QtCore.QRect(70, 25, 80, 30))
         self.textEdit.setObjectName("textEdit")
         self.label = QtWidgets.QLabel(StaffInputDialog)
-        self.label.setGeometry(QtCore.QRect(10, 20, 50, 30))
+        self.label.setGeometry(QtCore.QRect(10, 25, 50, 30))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(12)
@@ -34,10 +31,11 @@ class Ui_StaffInput(QtGui.QMainWindow):
         self.retranslateUi(StaffInputDialog)
         self.buttonBox.accepted.connect(StaffInputDialog.accept)
         self.buttonBox.rejected.connect(StaffInputDialog.reject)
-        self.buttonBox.accepted.connect(Ui_MainWindow.newstaff)
+        self.buttonBox.accepted.connect(StaffInputDialog.newstaff)
         QtCore.QMetaObject.connectSlotsByName(StaffInputDialog)
 
     def retranslateUi(self, StaffInputDialog):
         _translate = QtCore.QCoreApplication.translate
         StaffInputDialog.setWindowTitle(_translate("StaffInputDialog", "Dialog"))
         self.label.setText(_translate("StaffInputDialog", "Name:"))
+

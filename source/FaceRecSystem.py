@@ -26,12 +26,7 @@ class Thread(QThread):
         QThread.__init__(self, parent=parent)
         self.cap = cv2.VideoCapture(0)
         self.fn = 'data.pkl'
-        with open(self.fn, 'rb') as f:
-            self.infos = pickle.load(f, fix_imports=False)
-        self.encodings = []
-        for info in self.infos:
-            self.encodings.append(info.encoding)
-
+        self.loaddata()
     def run(self):
         # cap.set(6, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G'));
         while True:
@@ -52,10 +47,11 @@ class Thread(QThread):
                             self.managerRec.emit()
                         else:
                             self.staffRec.emit()
+                        break
                     else:
                         name = "unknown"
                         self.unknownRec.emit()
-                face_names.append(name)
+                face_names.append(name)                              #tag name for each face in camera
 
             # draw rectangle
             for (top, right, bottom, left), name in zip(face_locations, face_names):
@@ -73,12 +69,21 @@ class Thread(QThread):
             qpixmap = QPixmap.fromImage(qimage).scaled(300, 250, Qt.KeepAspectRatio)
 
             self.changePixmap.emit(qpixmap)
-            time.sleep(0.1)
-
+            time.sleep(0.03)
+    def loaddata(self):
+        with open(self.fn, 'rb') as f:
+            self.infos = pickle.load(f, fix_imports=False)
+        self.encodings = []
+        self.names=[]
+        for info in self.infos:
+            self.encodings.append(info.encoding)
+            self.names.append(info.name)
+    def savedata(self):
+        with open(self.fn, 'wb') as f:  # open file with write-mode
+            pickle.dump(self.infos, f, fix_imports=False)  # serialize and save object
     def __del__(self):
         self.cap.release()
         cv2.destroyAllWindows()
-
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
@@ -98,14 +103,17 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.infoButton = QtWidgets.QPushButton(self.centralwidget)
         self.infoButton.setGeometry(QtCore.QRect(330, 110, 61, 41))
         self.infoButton.setObjectName("infoButton")
+        self.infoButton.setDefault(True)
         self.pmsignButton = QtWidgets.QPushButton(self.centralwidget)
         self.pmsignButton.setEnabled(False)
         self.pmsignButton.setFlat(False)
+        self.pmsignButton.setDefault(True)
         self.pmsignButton.setGeometry(QtCore.QRect(330, 60, 61, 41))
         self.pmsignButton.setObjectName("pmsignButton")
         self.manageButton = QtWidgets.QPushButton(self.centralwidget)
         self.manageButton.setEnabled(False)
         self.manageButton.setFlat(False)
+        self.manageButton.setDefault(True)
         self.manageButton.setGeometry(QtCore.QRect(330, 160, 61, 41))
         self.manageButton.setObjectName("manageButton")
         self.video_label = QtWidgets.QLabel(self.centralwidget)
@@ -127,6 +135,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.delButtin.setGeometry(QtCore.QRect(330, 110, 61, 41))
         self.delButtin.setObjectName("delButtin")
         self.delButtin.setFlat(False)
+        self.delButtin.setDefault(True)
         self.returnButton = QtWidgets.QPushButton(self.centralwidget)
         self.returnButton.setEnabled(True)
         self.returnButton.setFlat(False)
@@ -144,16 +153,16 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
         self.infoButton.clicked.connect(self.today_information_slot)
-        self.manButton.clicked.connect(self.new_staff_slot)
-        self.staffButton.clicked.connect(self.new_staff_slot)
         self.manButton.clicked.connect(self.new_man_slot)
+        self.staffButton.clicked.connect(self.new_staff_slot)
         self.setUiHome()
-        self.manageButton.clicked.connect(self.setUiManager)
+
+        self.manageButton.clicked.connect(self.setUiManager)       #transformit UI
         self.returnButton.clicked.connect(self.setUiHome)
 
         self.th = Thread(self)
         self.th.changePixmap.connect(self.video_label.setPixmap)  # signal connect video label
-        self.th.managerRec.connect(self.managerFace)
+        self.th.managerRec.connect(self.managerFace)                   #bind some detection with it's own privilege
         self.th.staffRec.connect(self.staffFace)
         self.th.unknownRec.connect(self.unknownFace)
         self.th.noneRec.connect(self.noneFace)
@@ -195,26 +204,66 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         pass
 
     def new_staff_slot(self):
-        if self.th.face_encodings.__len__() != 1:  # not one face in Camera
-            pass
-        else:
-            self.dialog = QtWidgets.QDialog()
-            self.dialog.ui = Ui_StaffInput()
-            self.dialog.ui.setupUi(self.dialog)
-            self.dialog.ui.buttonBox.accepted.connect(self.newStaff)
-            self.dialog.exec_()
-            self.dialog.show()
+        self.dialog = QtWidgets.QDialog()
+        self.dialog.ui = Ui_StaffInput()
+        self.dialog.ui.setupUi(self.dialog)
+        self.dialog.ui.buttonBox.accepted.connect(self.newStaff)
+        self.dialog.exec_()
+        #self.dialog.show()
 
     def new_man_slot(self):
+        self.dialog = QtWidgets.QDialog()
+        self.dialog.ui = Ui_StaffInput()
+        self.dialog.ui.setupUi(self.dialog)
+        self.dialog.ui.buttonBox.accepted.connect(self.newMan)
+        self.dialog.exec_()
+        #self.dialog.show()
+
+    def newStaff(self):
         if self.th.face_encodings.__len__() != 1:  # not one face in Camera
-            pass
-        else:
-            self.dialog = QtWidgets.QDialog()
-            self.dialog.ui = Ui_StaffInput()
-            self.dialog.ui.setupUi(self.dialog)
-            self.dialog.ui.buttonBox.accepted.connect(self.newMan)
-            self.dialog.exec_()
-            self.dialog.show()
+            QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                              "友情提示：",
+                                              "没有人在摄像头前")
+            return
+        new_info = Info()
+        new_info.name = self.dialog.ui.textEdit.toPlainText()  # remember use oPlainText()
+        new_info.encoding = self.th.face_encodings[0]
+        if new_info.name in self.th.names or not self.unknownflag:
+            QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                              "友情提示：",
+                                              "此人数据已存在系统")
+            return
+        new_info.admin = 0
+        self.th.infos.append(new_info)
+        self.th.savedata()
+        self.th.loaddata()
+        QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                          "友情提示：",
+                                          "人脸数据存储成功！")
+
+    def newMan(self):
+        if self.th.face_encodings.__len__() != 1:  # not one face in Camera
+            if self.th.face_encodings.__len__() != 1:  # not one face in Camera
+                QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                                  "友情提示：",
+                                                  "没有人在摄像头前")
+                return
+        new_info = Info()
+        # new_info.name = self.staffDialog.textEdit
+        new_info.name = self.dialog.ui.textEdit.toPlainText()
+        new_info.encoding = self.th.face_encodings[0]
+        if new_info.name in self.th.names or not self.unknownflag:
+            QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                              "友情提示：",
+                                              "此人数据已存在系统")
+            return
+        new_info.admin = 1
+        self.th.infos.append(new_info)
+        self.th.savedata()
+        self.th.loaddata()
+        QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                          "友情提示：",
+                                          "人脸数据存储成功！")
     # actions for different roles
     def staffFace(self):  # set Ui when face is detected and the face belong one of System's members
         self.amsignButton.setEnabled(True)
@@ -222,59 +271,38 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.staffButton.setEnabled(False)
         self.manButton.setEnabled(False)
         self.manageButton.setEnabled(False)
-
+        self.infoButton.setEnabled(True)
+        self.unknownflag = False
     def unknownFace(self):  # set Ui when face is not the System's member
-        self.staffButton.setEnabled(True)
-        self.manButton.setEnabled(True)
-
+        self.manageButton.setEnabled(False)
+        self.amsignButton.setEnabled(False)
+        self.pmsignButton.setEnabled(False)
+        self.staffButton.setEnabled(False)
+        self.manButton.setEnabled(False)
+        self.infoButton.setEnabled(True)
+        self.unknownflag = True
     def managerFace(self):  # set Ui by whether face is detected and the face belong one of System's members
         self.manageButton.setEnabled(True)
         self.amsignButton.setEnabled(True)
         self.pmsignButton.setEnabled(True)
-        self.staffButton.setEnabled(False)
-        self.manButton.setEnabled(False)
-
+        self.staffButton.setEnabled(True)
+        self.manButton.setEnabled(True)
+        self.infoButton.setEnabled(True)
+        self.unknownflag = False
     def noneFace(self):  # no man in camera,all buttons are supposed to disable
         self.manageButton.setEnabled(False)
         self.amsignButton.setEnabled(False)
         self.pmsignButton.setEnabled(False)
         self.staffButton.setEnabled(False)
         self.manButton.setEnabled(False)
-
-    def newStaff(self):
-        if self.th.face_encodings.__len__() != 1:  # not one face in Camera
-            pass
-        new_info = Info()
-        new_info.name = self.dialog.ui.textEdit.toPlainText()         #remember use oPlainText()
-        new_info.encoding = self.th.face_encodings[0]
-        new_info.admin = 0
-        self.th.infos.append(new_info)
-        with open(self.th.fn, 'wb') as f:  # open file with write-mode
-            pickle.dump(self.th.infos, f, fix_imports=False)  # serialize and save object
-        self.th.encodings = []
-        for info in self.th.infos:
-            self.th.encodings.append(info.encoding)
-    def newMan(self):
-        if self.th.face_encodings.__len__() != 1:  # not one face in Camera
-            pass
-        new_info = Info()
-       # new_info.name = self.staffDialog.textEdit
-        new_info.name = self.dialog.ui.textEdit.toPlainText()
-        new_info.encoding = self.th.face_encodings[0]
-        new_info.admin = 1
-        self.th.infos.append(new_info)
-        with open(self.th.fn, 'wb') as f:  # open file with write-mode
-            pickle.dump(self.th.infos, f, fix_imports=False)  # serialize and save object
-        self.th.encodings = []
-        for info in self.th.infos:
-            self.th.encodings.append(info.encoding)
+        self.infoButton.setEnabled(False)
+        self.unknownflag=False
 class Ui_StaffInput(object):
     def setupUi(self, StaffInputDialog):
         StaffInputDialog.setObjectName("StaffInputDialog")
-        #StaffInputDialog.resize(235, 82)
-        StaffInputDialog.resize(280, 120)
+        StaffInputDialog.resize(250, 80)
         self.buttonBox = QtWidgets.QDialogButtonBox(StaffInputDialog)
-        self.buttonBox.setGeometry(QtCore.QRect(170, 10, 61, 301))
+        self.buttonBox.setGeometry(QtCore.QRect(170, 10, 61, 300))
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
         self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
@@ -282,7 +310,7 @@ class Ui_StaffInput(object):
         self.textEdit.setGeometry(QtCore.QRect(70, 25, 80, 30))
         self.textEdit.setObjectName("textEdit")
         self.label = QtWidgets.QLabel(StaffInputDialog)
-        self.label.setGeometry(QtCore.QRect(10, 20, 50, 30))
+        self.label.setGeometry(QtCore.QRect(10, 25, 50, 30))
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(12)
