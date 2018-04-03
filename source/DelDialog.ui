@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DeleDialog</class>
+ <widget class="QDialog" name="DeleDialog">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>313</width>
+    <height>148</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>删除成员数据</string>
+  </property>
+  <widget class="QDialogButtonBox" name="buttonBox">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>120</y>
+     <width>161</width>
+     <height>32</height>
+    </rect>
+   </property>
+   <property name="orientation">
+    <enum>Qt::Horizontal</enum>
+   </property>
+   <property name="standardButtons">
+    <set>QDialogButtonBox::Cancel|QDialogButtonBox::Ok</set>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>10</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CheckBox</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_2">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>10</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CheckBox</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_3">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>40</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CheckBox</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_4">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>40</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CheckBox</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_5">
+   <property name="geometry">
+    <rect>
+     <x>60</x>
+     <y>70</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CheckBox</string>
+   </property>
+  </widget>
+  <widget class="QCheckBox" name="checkBox_6">
+   <property name="geometry">
+    <rect>
+     <x>180</x>
+     <y>70</y>
+     <width>71</width>
+     <height>16</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>CheckBox</string>
+   </property>
+  </widget>
+  <widget class="QPushButton" name="pushButton">
+   <property name="geometry">
+    <rect>
+     <x>200</x>
+     <y>90</y>
+     <width>75</width>
+     <height>23</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>next Page</string>
+   </property>
+  </widget>
+ </widget>
+ <resources/>
+ <connections>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>accepted()</signal>
+   <receiver>DeleDialog</receiver>
+   <slot>accept()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>248</x>
+     <y>254</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>157</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>buttonBox</sender>
+   <signal>rejected()</signal>
+   <receiver>DeleDialog</receiver>
+   <slot>reject()</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>316</x>
+     <y>260</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>286</x>
+     <y>274</y>
+    </hint>
+   </hints>
+  </connection>
+ </connections>
+</ui>
