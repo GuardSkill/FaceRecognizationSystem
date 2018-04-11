@@ -8,14 +8,14 @@
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 
-class Ui_StaffInputDialog(object):
+class Ui_StaffInput(object):
     def setupUi(self, StaffInputDialog):
         StaffInputDialog.setObjectName("StaffInputDialog")
-        StaffInputDialog.resize(235, 82)
+        StaffInputDialog.resize(250, 80)
         self.buttonBox = QtWidgets.QDialogButtonBox(StaffInputDialog)
-        self.buttonBox.setGeometry(QtCore.QRect(170, 10, 61, 301))
+        self.buttonBox.setGeometry(QtCore.QRect(170, 10, 61, 300))
         self.buttonBox.setOrientation(QtCore.Qt.Vertical)
-        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel|QtWidgets.QDialogButtonBox.Ok)
+        self.buttonBox.setStandardButtons(QtWidgets.QDialogButtonBox.Cancel | QtWidgets.QDialogButtonBox.Ok)
         self.buttonBox.setObjectName("buttonBox")
         self.textEdit = QtWidgets.QTextEdit(StaffInputDialog)
         self.textEdit.setGeometry(QtCore.QRect(70, 25, 80, 30))
@@ -31,11 +31,10 @@ class Ui_StaffInputDialog(object):
         self.retranslateUi(StaffInputDialog)
         self.buttonBox.accepted.connect(StaffInputDialog.accept)
         self.buttonBox.rejected.connect(StaffInputDialog.reject)
-        self.buttonBox.accepted.connect(StaffInputDialog.newstaff)
         QtCore.QMetaObject.connectSlotsByName(StaffInputDialog)
 
     def retranslateUi(self, StaffInputDialog):
         _translate = QtCore.QCoreApplication.translate
-        StaffInputDialog.setWindowTitle(_translate("StaffInputDialog", "Dialog"))
+        StaffInputDialog.setWindowTitle(_translate("StaffInputDialog", "请保持录入者在摄像头中"))
         self.label.setText(_translate("StaffInputDialog", "Name:"))
 
