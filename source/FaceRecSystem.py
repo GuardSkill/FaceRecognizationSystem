@@ -13,6 +13,8 @@ import cv2
 import face_recognition
 import time
 import pickle
+from ORM import  CheckInfo,Service
+from tableWidget import Ui_Form
 
 
 class Thread(QThread):
@@ -37,7 +39,7 @@ class Thread(QThread):
             if face_locations.__len__() == 0:  # no face was detected
                 self.noneRec.emit()
             self.face_encodings = face_recognition.face_encodings(small_frame, face_locations)
-            face_names = []
+            self.face_names = []
             # compare face
             for face_encoding in self.face_encodings:  # scan every face in video
                 match = face_recognition.compare_faces(self.encodings, face_encoding)  # compare every face in data
@@ -52,10 +54,10 @@ class Thread(QThread):
                     else:
                         name = "unknown"
                         self.unknownRec.emit()
-                face_names.append(name)  # tag name for each face in camera
+                self.face_names.append(name)  # tag name for each face in camera
 
             # draw rectangle
-            for (top, right, bottom, left), name in zip(face_locations, face_names):
+            for (top, right, bottom, left), name in zip(face_locations, self.face_names):
                 top *= 4
                 right *= 4
                 bottom *= 4
@@ -88,7 +90,6 @@ class Thread(QThread):
     def __del__(self):
         self.cap.release()
         cv2.destroyAllWindows()
-
 
 class Ui_MainWindow(QtWidgets.QMainWindow):
     def setupUi(self, MainWindow):
@@ -158,6 +159,8 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.retranslateUi(MainWindow)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
+        self.amsignButton.clicked.connect(self.uptime_slot)
+        self.pmsignButton.clicked.connect(self.offtime_slot)
         self.infoButton.clicked.connect(self.today_information_slot)
         self.manButton.clicked.connect(self.new_man_slot)
         self.staffButton.clicked.connect(self.new_staff_slot)
@@ -167,6 +170,7 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.manageButton.clicked.connect(self.setUiManager)  # transformit UI
         self.returnButton.clicked.connect(self.setUiHome)
 
+        self.service=Service()
         self.th = Thread(self)
         self.th.changePixmap.connect(self.video_label.setPixmap)  # signal connect video label
         self.th.managerRec.connect(self.managerFace)  # bind some detection with it's own privilege
@@ -207,8 +211,32 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.returnButton.setVisible(False);
         self.staffButton.setVisible(False);
 
+    def uptime_slot(self):
+        for name in self.th.face_names:
+            if name !='unknown':
+                if self.service.newinfo(name):
+                    msg=name+"上班打卡成功"
+                else:
+                    msg=name+"上班打卡失败"
+                QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                                      "友情提示：",
+                                                      msg)
+    def offtime_slot(self):
+        for name in self.th.face_names:
+            if name !='unknown':
+                if self.service.updateinfo(name):
+                    msg=name+"下班打卡成功"
+                else:
+                    msg=name+"下班打卡失败"
+                QtWidgets.QMessageBox.information(self,  # 使用infomation信息框
+                                                      "友情提示：",
+                                                      msg)
     def today_information_slot(self):
-        pass
+        self.form=QtWidgets.QDialog()
+        self.form.ui=Ui_Form()
+        self.form.ui.setupUi(self.form,self.service.listinfo())
+        self.form.exec_()
+
 
     def new_staff_slot(self):
         self.dialog = QtWidgets.QDialog()
@@ -290,7 +318,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
                                                   "删除成功")
                 return
 
-
     # actions for different roles
     def staffFace(self):  # set Ui when face is detected and the face belong one of System's members
         self.amsignButton.setEnabled(True)
@@ -327,7 +354,6 @@ class Ui_MainWindow(QtWidgets.QMainWindow):
         self.manButton.setEnabled(False)
         self.infoButton.setEnabled(False)
         self.unknownflag = False
-
 
 class Ui_StaffInput(object):
     def setupUi(self, StaffInputDialog):
@@ -412,9 +438,9 @@ class Ui_DeleDialog(object):
         QtCore.QMetaObject.connectSlotsByName(DeleDialog)
 
     def redisplay(self, names):
-        if self.x >= names.__len__():  # reset to zero when index>len
+        if self.x >= names.__len__():  # reset to zero when index>len(a loop to display all data)
             self.x = 0
-        for i in range(0, 6):
+        for i in range(0, 6):            #set every CheckBoxs's information
             if self.x < names.__len__():
                 self.checkBoxs[i].setVisible(True)
                 self.checkBoxs[i].setText(names[self.x])

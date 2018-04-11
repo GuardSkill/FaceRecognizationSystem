@@ -49,7 +49,7 @@ class Service(object):
             self.session.commit()
             info.name = thename
             self.session.commit()
+            return  True
     def listinfo(self):
-        infos=self.session.query(CheckInfo).filter_by(date_time=returndate())
+        infos=self.session.query(CheckInfo).filter_by(date_time=returndate()).all()
         return infos
-#s=Service()
